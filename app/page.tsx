@@ -19,17 +19,18 @@ export const revalidate = 0;
 export default async function GalleryPage() {
   const { data: images, error } = await supabase
     .from("images")
-    .select(`
+    .select(
+      `
       id,
       url,
       captions (
         id,
         content
       )
-    `)
+    `
+    )
     .eq("is_public", true)
-    .order("created_datetime_utc", { ascending: false })
-    .limit(100);
+    .order("created_datetime_utc", { ascending: false });
 
   if (error) {
     return (
@@ -39,35 +40,42 @@ export default async function GalleryPage() {
     );
   }
 
-  // Filter to only show images that have at least one non-empty caption
-  const imagesWithCaptions =
-    images?.filter((image: any) =>
-      Array.isArray(image.captions) &&
-      image.captions.some((c: any) => {
-        const text = (c.content ?? c.text) || "";
-        return typeof text === "string" && text.trim().length > 0;
+  // Flatten: one card per caption (and filter out empties)
+  const cardsWithCaptions =
+    images
+      ?.flatMap((img: any) => {
+        const caps = Array.isArray(img.captions) ? img.captions : [];
+        return caps
+          .map((c: any) => {
+            const text = (c.content ?? c.text ?? "").toString().trim();
+            if (!text) return null; // skip empty captions
+
+            return {
+              cardId: c.id, // unique per caption card
+              imageId: img.id,
+              url: img.url,
+              caption: { id: c.id, content: text },
+            };
+          })
+          .filter(Boolean);
       })
-    ) || [];
+      .filter(Boolean) || [];
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10">
       <div className="mx-auto max-w-6xl">
         <header className="mb-12 text-center">
-          <h1 className="text-5xl font-black tracking-tight text-slate-900">
-            HUMOR FEED
-          </h1>
-          <p className="mt-3 text-base text-slate-500">
-            The internet’s quiet thoughts, out loud.
-          </p>
+          <h1 className="text-5xl font-black tracking-tight text-slate-900">HUMOR FEED</h1>
+          <p className="mt-3 text-base text-slate-500">The internet’s quiet thoughts, out loud.</p>
           <div className="mt-6 flex justify-center">
             <div className="h-[2px] w-16 rounded-full bg-slate-200" />
           </div>
         </header>
-        {/* Upload Section */}
+
         <UploadSection />
 
-        {/* Gallery Grid */}
-        <GalleryGrid images={imagesWithCaptions} />
+        {/* Now the grid receives cards (one per caption) */}
+        <GalleryGrid images={cardsWithCaptions} />
       </div>
     </main>
   );
