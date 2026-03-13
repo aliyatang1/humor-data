@@ -134,7 +134,6 @@ export default function UsersPage() {
                           onClick={() => {
                             setEditingId(user.id);
                             setEditData({
-                              full_name: user.full_name || "",
                               is_superadmin: user.is_superadmin,
                             });
                           }}
