@@ -18,7 +18,6 @@ export default function AdminLayout({
     const checkSuperadmin = async () => {
       const supabase = createSupabaseBrowserClient();
 
-      // Get current user
       const { data: authData } = await supabase.auth.getUser();
 
       if (!authData.user) {
@@ -26,7 +25,6 @@ export default function AdminLayout({
         return;
       }
 
-      // Check if user has is_superadmin flag
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("is_superadmin")
@@ -48,7 +46,7 @@ export default function AdminLayout({
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-500">Loading...</div>
+        <div className="text-gray-500 dark:text-slate-400">Loading...</div>
       </div>
     );
   }
@@ -58,41 +56,35 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <nav className="bg-white dark:bg-slate-800 shadow-sm border-b border-gray-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/admin" className="font-bold text-lg">
+            <Link href="/admin" className="font-bold text-lg text-gray-900 dark:text-white">
               Admin Dashboard
             </Link>
             <div className="flex space-x-4 text-sm">
-              <Link
-                href="/admin"
-                className="text-gray-700 hover:text-gray-900"
-              >
+              <Link href="/admin" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
                 Dashboard
               </Link>
-              <Link
-                href="/admin/users"
-                className="text-gray-700 hover:text-gray-900"
-              >
+              <Link href="/admin/users" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
                 Users
               </Link>
-              <Link
-                href="/admin/images"
-                className="text-gray-700 hover:text-gray-900"
-              >
+              <Link href="/admin/images" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
                 Images
               </Link>
-              <Link
-                href="/admin/captions"
-                className="text-gray-700 hover:text-gray-900"
-              >
+              <Link href="/admin/captions" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
                 Captions
+              </Link>
+              <Link href="/admin/humor-flavors" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
+                Humor Flavors
+              </Link>
+              <Link href="/admin/llm-prompt-chains" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
+                LLM Prompt Chains
               </Link>
             </div>
           </div>
-          <Link href="/logout" className="text-sm text-gray-700 hover:text-gray-900">
+          <Link href="/logout" className="text-sm text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white">
             Logout
           </Link>
         </div>

@@ -107,34 +107,31 @@ export default function CaptionsPage() {
     const matchesSearch = (caption.content || "")
       .toLowerCase()
       .includes(search.toLowerCase());
-    const matchesImage =
-      !filterImageId || caption.image_id === filterImageId;
+    const matchesImage = !filterImageId || caption.image_id === filterImageId;
     return matchesSearch && matchesImage;
   });
 
-  // Get unique image IDs for filter dropdown
   const uniqueImageIds = Array.from(new Set(captions.map((c) => c.image_id)));
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Captions Management</h1>
-        <p className="text-gray-600 mt-2">Create, edit, and manage captions</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Captions Management</h1>
+        <p className="text-gray-600 dark:text-slate-400 mt-2">Create, edit, and manage captions</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
-      {/* Create Caption Form */}
       {showCreateForm && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Create New Caption</h2>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Caption</h2>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                 Caption Content
               </label>
               <textarea
@@ -142,11 +139,11 @@ export default function CaptionsPage() {
                 onChange={(e) => setCreateData({ ...createData, content: e.target.value })}
                 placeholder="Enter caption text..."
                 rows={3}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                 Image ID
               </label>
               <input
@@ -154,7 +151,7 @@ export default function CaptionsPage() {
                 value={createData.image_id}
                 onChange={(e) => setCreateData({ ...createData, image_id: e.target.value })}
                 placeholder="Paste image ID here..."
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
               />
             </div>
             <div className="flex space-x-2">
@@ -171,7 +168,7 @@ export default function CaptionsPage() {
                   setShowCreateForm(false);
                   setCreateData({ content: "", image_id: "" });
                 }}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400"
+                className="bg-gray-300 dark:bg-slate-600 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 dark:hover:bg-slate-500"
               >
                 Cancel
               </button>
@@ -186,12 +183,12 @@ export default function CaptionsPage() {
           placeholder="Search captions..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm"
+          className="flex-1 border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
         />
         <select
           value={filterImageId}
           onChange={(e) => setFilterImageId(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
+          className="border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
         >
           <option value="">All Images</option>
           {uniqueImageIds.map((id) => (
@@ -208,74 +205,59 @@ export default function CaptionsPage() {
             + New Caption
           </button>
         )}
-        <div className="text-sm text-gray-600 whitespace-nowrap">
+        <div className="text-sm text-gray-600 dark:text-slate-400 whitespace-nowrap self-center">
           {filteredCaptions.length} of {captions.length} captions
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-100 dark:border-slate-700 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading...</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
-                  Caption
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
-                  Image ID
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
-                  Votes
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Caption</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Image ID</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Votes</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Created</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {filteredCaptions.map((caption) => (
-                <tr key={caption.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-2xl">
+                <tr key={caption.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-slate-100 max-w-2xl">
                     {editingId === caption.id ? (
                       <textarea
                         value={editData.content ?? caption.content ?? ""}
-                        onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            content: e.target.value,
-                          })
-                        }
+                        onChange={(e) => setEditData({ ...editData, content: e.target.value })}
                         rows={2}
-                        className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                        className="w-full border border-gray-300 dark:border-slate-600 rounded px-2 py-1 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                       />
                     ) : (
                       <p className="line-clamp-2">{caption.content || "(no content)"}</p>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm font-mono text-gray-600">
+                  <td className="px-6 py-4 text-sm font-mono text-gray-600 dark:text-slate-400">
                     {caption.image_id.slice(0, 12)}...
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center space-x-1">
-                        <span className="text-green-600">👍</span>
-                        <span className="font-medium">{caption.votes.upvotes}</span>
+                        <span>👍</span>
+                        <span className="font-medium text-gray-900 dark:text-slate-100">{caption.votes.upvotes}</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <span className="text-red-600">👎</span>
-                        <span className="font-medium">{caption.votes.downvotes}</span>
+                        <span>👎</span>
+                        <span className="font-medium text-gray-900 dark:text-slate-100">{caption.votes.downvotes}</span>
                       </div>
-                      <div className="text-gray-500">
+                      <div className="text-gray-500 dark:text-slate-400">
                         ({caption.votes.upvotes + caption.votes.downvotes})
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
+                  <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
                     {new Date(caption.created_datetime_utc).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-sm space-x-2">
@@ -284,13 +266,13 @@ export default function CaptionsPage() {
                         <button
                           onClick={() => handleUpdate(caption.id)}
                           disabled={updating}
-                          className="text-green-600 hover:text-green-700 font-medium disabled:opacity-50"
+                          className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium disabled:opacity-50"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
-                          className="text-gray-600 hover:text-gray-700"
+                          className="text-gray-600 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300"
                         >
                           Cancel
                         </button>
@@ -302,14 +284,14 @@ export default function CaptionsPage() {
                             setEditingId(caption.id);
                             setEditData({ content: caption.content ?? undefined });
                           }}
-                          className="text-blue-600 hover:text-blue-700 font-medium"
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(caption.id)}
                           disabled={deleting}
-                          className="text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
+                          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium disabled:opacity-50"
                         >
                           Delete
                         </button>
@@ -325,13 +307,13 @@ export default function CaptionsPage() {
 
       {filteredCaptions.length === 0 && !loading && (
         <div className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-slate-400">
             {search || filterImageId ? "No captions match your filters" : "No captions found"}
           </p>
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-700 text-sm">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-blue-700 dark:text-blue-400 text-sm">
         <p className="font-medium mb-2">📋 Captions</p>
         <p>
           You can now create, edit, and delete captions directly from this interface. Be careful when deleting captions, as associated votes will also be removed.

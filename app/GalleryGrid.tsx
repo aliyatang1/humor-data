@@ -13,7 +13,6 @@ type ImageRow = {
 type CaptionItem = { id: string; text: string };
 
 export default function GalleryGrid({ images }: { images: ImageRow[] }) {
-  // Normalize captions and drop empties once per render
   const normalized = useMemo(() => {
     return (images ?? [])
       .map((img) => {
@@ -30,7 +29,6 @@ export default function GalleryGrid({ images }: { images: ImageRow[] }) {
       .filter((img) => img.url && img.captions.length > 0);
   }, [images]);
 
-  // For each image, which caption index is currently "on top"
   const [idxByImage, setIdxByImage] = useState<Record<string, number>>({});
 
   const advanceStack = (imageId: string) => {
@@ -40,13 +38,12 @@ export default function GalleryGrid({ images }: { images: ImageRow[] }) {
     });
   };
 
-  // Build the list of tiles that still have remaining captions
   const visibleTiles = useMemo(() => {
     return normalized
       .map((img) => {
         const idx = idxByImage[img.id] ?? 0;
         const caption = img.captions[idx];
-        if (!caption) return null; // stack finished -> remove tile
+        if (!caption) return null;
         return { imageId: img.id, url: img.url, caption, idx, total: img.captions.length };
       })
       .filter(Boolean) as Array<{
@@ -70,6 +67,6 @@ export default function GalleryGrid({ images }: { images: ImageRow[] }) {
       ))}
     </div>
   ) : (
-    <p className="text-center text-slate-500">No public images available.</p>
+    <p className="text-center text-slate-500 dark:text-slate-400">No public images available.</p>
   );
 }

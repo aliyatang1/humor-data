@@ -33,30 +33,26 @@ export default async function GalleryPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <pre className="text-red-500">{error.message}</pre>
+      <main className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <pre className="text-red-500 dark:text-red-400">{error.message}</pre>
       </main>
     );
   }
 
-  // Pass raw images; GalleryGrid will:
-  // - drop empty captions
-  // - show one caption-card at a time per image tile
-  // - advance on vote
   const imagesSafe = images ?? [];
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-10">
       <div className="mx-auto max-w-6xl">
         <header className="mb-12 text-center">
-          <h1 className="text-5xl font-black tracking-tight text-slate-900">
+          <h1 className="text-5xl font-black tracking-tight text-slate-900 dark:text-white">
             HUMOR FEED
           </h1>
-          <p className="mt-3 text-base text-slate-500">
-            The internet’s quiet thoughts, out loud.
+          <p className="mt-3 text-base text-slate-500 dark:text-slate-400">
+            The internet's quiet thoughts, out loud.
           </p>
           <div className="mt-6 flex justify-center">
-            <div className="h-[2px] w-16 rounded-full bg-slate-200" />
+            <div className="h-[2px] w-16 rounded-full bg-slate-200 dark:bg-slate-700" />
           </div>
         </header>
 

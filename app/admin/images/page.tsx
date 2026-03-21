@@ -98,23 +98,22 @@ export default function ImagesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Images Management</h1>
-        <p className="text-gray-600 mt-2">Manage uploaded images and control visibility</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Images Management</h1>
+        <p className="text-gray-600 dark:text-slate-400 mt-2">Manage uploaded images and control visibility</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
-      {/* Upload Form */}
       {showUploadForm && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Add New Image</h2>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Add New Image</h2>
           <form onSubmit={handleUpload} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                 Image URL
               </label>
               <input
@@ -122,7 +121,7 @@ export default function ImagesPage() {
                 placeholder="https://example.com/image.jpg"
                 value={uploadUrl}
                 onChange={(e) => setUploadUrl(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -133,7 +132,7 @@ export default function ImagesPage() {
                 onChange={(e) => setUploadIsPublic(e.target.checked)}
                 className="rounded"
               />
-              <label htmlFor="public-toggle" className="text-sm text-gray-700">
+              <label htmlFor="public-toggle" className="text-sm text-gray-700 dark:text-slate-300">
                 Make image public (visible in gallery)
               </label>
             </div>
@@ -152,7 +151,7 @@ export default function ImagesPage() {
                   setUploadUrl("");
                   setUploadIsPublic(false);
                 }}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400"
+                className="bg-gray-300 dark:bg-slate-600 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 dark:hover:bg-slate-500"
               >
                 Cancel
               </button>
@@ -167,7 +166,7 @@ export default function ImagesPage() {
           placeholder="Search images by ID or URL..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm"
+          className="flex-1 border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
         />
         {!showUploadForm && (
           <button
@@ -177,31 +176,31 @@ export default function ImagesPage() {
             + Add Image
           </button>
         )}
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-slate-400">
           {filteredImages.length} of {images.length} images
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-100 dark:border-slate-700 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading...</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Preview</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">ID</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Captions</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Created</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Preview</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">ID</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Status</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Captions</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Created</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {filteredImages.map((image) => (
-                <tr key={image.id} className="hover:bg-gray-50">
+                <tr key={image.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
                   <td className="px-6 py-4">
-                    <div className="relative w-16 h-16 bg-gray-200 rounded overflow-hidden">
+                    <div className="relative w-16 h-16 bg-gray-200 dark:bg-slate-700 rounded overflow-hidden">
                       {image.url ? (
                         <Image
                           src={image.url}
@@ -211,44 +210,44 @@ export default function ImagesPage() {
                           unoptimized
                         />
                       ) : (
-                        <div className="flex items-center justify-center w-full h-full text-gray-400 text-xs">
+                        <div className="flex items-center justify-center w-full h-full text-gray-400 dark:text-slate-500 text-xs">
                           No image
                         </div>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm font-mono text-gray-900 max-w-xs truncate">
+                  <td className="px-6 py-4 text-sm font-mono text-gray-900 dark:text-slate-100 max-w-xs truncate">
                     {image.id}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         image.is_public
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
+                          : "bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-300"
                       }`}
                     >
                       {image.is_public ? "🌍 Public" : "🔒 Private"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
+                  <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
                     {image.captionCount} caption{image.captionCount !== 1 ? "s" : ""}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
+                  <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
                     {new Date(image.created_datetime_utc).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-sm space-x-2">
                     <button
                       onClick={() => handleTogglePublic(image)}
                       disabled={updatingId === image.id}
-                      className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium disabled:opacity-50"
                     >
                       {image.is_public ? "Make Private" : "Make Public"}
                     </button>
                     <button
                       onClick={() => handleDelete(image.id)}
                       disabled={updatingId === image.id}
-                      className="text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
+                      className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium disabled:opacity-50"
                     >
                       Delete
                     </button>
@@ -262,13 +261,13 @@ export default function ImagesPage() {
 
       {filteredImages.length === 0 && !loading && (
         <div className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-slate-400">
             {search ? "No images match your search" : "No images found"}
           </p>
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-700 text-sm space-y-2">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-blue-700 dark:text-blue-400 text-sm space-y-2">
         <p className="font-medium mb-1">Image Management Info</p>
         <ul className="list-disc list-inside space-y-1 text-xs">
           <li>Only <strong>public</strong> images appear in the main gallery</li>

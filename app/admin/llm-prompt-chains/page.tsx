@@ -18,7 +18,7 @@ interface LLMPromptChain {
 interface LLMResponse {
   id: string;
   created_datetime_utc: string;
-  llm_model_response: string; // JSON string
+  llm_model_response: string;
   processing_time_seconds: number;
   llm_model_id: number;
   profile_id: string;
@@ -35,7 +35,6 @@ export default function LLMPromptChainsPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
 
-  // Chain state
   const [editingChainId, setEditingChainId] = useState<number | null>(null);
   const [editChainData, setEditChainData] = useState<{ caption_request_id?: number }>({});
   const [showCreateChain, setShowCreateChain] = useState(false);
@@ -68,7 +67,6 @@ export default function LLMPromptChainsPage() {
     }
   }
 
-  // Chain handlers
   async function handleCreateChain(e: React.FormEvent) {
     e.preventDefault();
     if (!createChainData.caption_request_id) {
@@ -121,7 +119,6 @@ export default function LLMPromptChainsPage() {
     }
   }
 
-  // Helper to parse JSON from response
   const parseResponseJson = (jsonStr: string | object) => {
     if (typeof jsonStr === "object") return jsonStr;
     try {
@@ -134,12 +131,12 @@ export default function LLMPromptChainsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">LLM Prompt Chains</h1>
-        <p className="text-gray-600 mt-2">Manage LLM prompt chains and view generated responses</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">LLM Prompt Chains</h1>
+        <p className="text-gray-600 dark:text-slate-400 mt-2">Manage LLM prompt chains and view generated responses</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
@@ -147,7 +144,7 @@ export default function LLMPromptChainsPage() {
       {/* CHAINS SECTION */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-900">Prompt Chains</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Prompt Chains</h2>
           {!showCreateChain && (
             <button
               onClick={() => setShowCreateChain(true)}
@@ -159,14 +156,14 @@ export default function LLMPromptChainsPage() {
         </div>
 
         {showCreateChain && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
             <form onSubmit={handleCreateChain} className="space-y-3">
               <input
                 type="number"
                 placeholder="Caption Request ID"
                 value={createChainData.caption_request_id}
                 onChange={(e) => setCreateChainData({ caption_request_id: e.target.value })}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                className="w-full border border-gray-300 dark:border-slate-600 rounded px-3 py-2 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
               />
               <div className="flex space-x-2">
                 <button
@@ -182,7 +179,7 @@ export default function LLMPromptChainsPage() {
                     setShowCreateChain(false);
                     setCreateChainData({ caption_request_id: "" });
                   }}
-                  className="bg-gray-300 text-gray-700 px-3 py-2 rounded text-sm font-medium hover:bg-gray-400"
+                  className="bg-gray-300 dark:bg-slate-600 text-gray-700 dark:text-slate-200 px-3 py-2 rounded text-sm font-medium hover:bg-gray-400 dark:hover:bg-slate-500"
                 >
                   Cancel
                 </button>
@@ -191,36 +188,36 @@ export default function LLMPromptChainsPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-100 dark:border-slate-700 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading...</div>
+            <div className="p-8 text-center text-gray-500 dark:text-slate-400">Loading...</div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">ID</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Caption Request ID</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Created</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">ID</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Caption Request ID</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Created</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                 {chains.map((chain) => (
-                  <tr key={chain.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-900">{chain.id}</td>
-                    <td className="px-6 py-4 text-sm">
+                  <tr key={chain.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-900 dark:text-slate-100">{chain.id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-slate-100">
                       {editingChainId === chain.id ? (
                         <input
                           type="number"
                           value={editChainData.caption_request_id ?? chain.caption_request_id}
                           onChange={(e) => setEditChainData({ caption_request_id: parseInt(e.target.value) })}
-                          className="border border-gray-300 rounded px-2 py-1 text-sm w-32"
+                          className="border border-gray-300 dark:border-slate-600 rounded px-2 py-1 text-sm w-32 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                         />
                       ) : (
                         chain.caption_request_id
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
                       {new Date(chain.created_datetime_utc).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-sm space-x-2">
@@ -228,13 +225,13 @@ export default function LLMPromptChainsPage() {
                         <>
                           <button
                             onClick={() => handleUpdateChain(chain.id)}
-                            className="text-green-600 hover:text-green-700 font-medium text-xs"
+                            className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium text-xs"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingChainId(null)}
-                            className="text-gray-600 hover:text-gray-700 text-xs"
+                            className="text-gray-600 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 text-xs"
                           >
                             Cancel
                           </button>
@@ -246,7 +243,7 @@ export default function LLMPromptChainsPage() {
                               setEditingChainId(chain.id);
                               setEditChainData({ caption_request_id: chain.caption_request_id });
                             }}
-                            className="text-blue-600 hover:text-blue-700 font-medium text-xs"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-xs"
                           >
                             Edit
                           </button>
@@ -255,13 +252,13 @@ export default function LLMPromptChainsPage() {
                               setSelectedChainId(chain.id);
                               loadResponsesForChain(chain.id);
                             }}
-                            className="text-purple-600 hover:text-purple-700 font-medium text-xs"
+                            className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium text-xs"
                           >
                             View Responses
                           </button>
                           <button
                             onClick={() => handleDeleteChain(chain.id)}
-                            className="text-red-600 hover:text-red-700 font-medium text-xs"
+                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium text-xs"
                           >
                             Delete
                           </button>
@@ -276,7 +273,7 @@ export default function LLMPromptChainsPage() {
         </div>
 
         {chains.length === 0 && !loading && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-slate-400">
             No prompt chains found
           </div>
         )}
@@ -284,46 +281,46 @@ export default function LLMPromptChainsPage() {
 
       {/* RESPONSES SECTION */}
       {selectedChainId && (
-        <div className="space-y-4 border-t pt-8">
+        <div className="space-y-4 border-t border-gray-200 dark:border-slate-700 pt-8">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
               Responses for Chain #{selectedChainId}
             </h2>
-            <p className="text-gray-600 mt-1">Read-only view of generated LLM responses</p>
+            <p className="text-gray-600 dark:text-slate-400 mt-1">Read-only view of generated LLM responses</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow border border-gray-100 overflow-x-auto">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-100 dark:border-slate-700 overflow-x-auto">
             {responses.length > 0 ? (
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">ID</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Model ID</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Processing Time (s)</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Flavor ID</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Response (Preview)</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Created</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">ID</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Model ID</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Processing Time (s)</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Flavor ID</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Response (Preview)</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-slate-300">Created</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                   {responses.map((response) => {
                     const responseData = parseResponseJson(response.llm_model_response);
                     return (
-                      <tr key={response.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 text-xs font-mono text-gray-600">
+                      <tr key={response.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                        <td className="px-6 py-4 text-xs font-mono text-gray-600 dark:text-slate-400">
                           {response.id.slice(0, 8)}...
                         </td>
-                        <td className="px-6 py-4 text-xs font-mono">{response.llm_model_id}</td>
-                        <td className="px-6 py-4 text-xs">{response.processing_time_seconds.toFixed(2)}</td>
-                        <td className="px-6 py-4 text-xs font-mono">{response.humor_flavor_id}</td>
+                        <td className="px-6 py-4 text-xs font-mono text-gray-900 dark:text-slate-100">{response.llm_model_id}</td>
+                        <td className="px-6 py-4 text-xs text-gray-900 dark:text-slate-100">{response.processing_time_seconds.toFixed(2)}</td>
+                        <td className="px-6 py-4 text-xs font-mono text-gray-900 dark:text-slate-100">{response.humor_flavor_id}</td>
                         <td className="px-6 py-4 text-xs max-w-md">
                           {responseData ? (
                             <div>
                               {responseData.scene_summary && (
-                                <p className="line-clamp-2 text-gray-700">{responseData.scene_summary}</p>
+                                <p className="line-clamp-2 text-gray-700 dark:text-slate-300">{responseData.scene_summary}</p>
                               )}
                               {responseData.core_anchors && (
-                                <p className="text-gray-500 mt-1">
+                                <p className="text-gray-500 dark:text-slate-400 mt-1">
                                   {Array.isArray(responseData.core_anchors)
                                     ? responseData.core_anchors.slice(0, 2).join(" • ")
                                     : responseData.core_anchors}
@@ -331,10 +328,10 @@ export default function LLMPromptChainsPage() {
                               )}
                             </div>
                           ) : (
-                            <p className="text-gray-500">Invalid JSON</p>
+                            <p className="text-gray-500 dark:text-slate-400">Invalid JSON</p>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-xs text-gray-700">
+                        <td className="px-6 py-4 text-xs text-gray-700 dark:text-slate-300">
                           {new Date(response.created_datetime_utc).toLocaleDateString()}
                         </td>
                       </tr>
@@ -343,7 +340,7 @@ export default function LLMPromptChainsPage() {
                 </tbody>
               </table>
             ) : (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-gray-500 dark:text-slate-400">
                 No responses found for this chain
               </div>
             )}
@@ -351,7 +348,7 @@ export default function LLMPromptChainsPage() {
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-700 text-sm">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-blue-700 dark:text-blue-400 text-sm">
         <p className="font-medium mb-2">ℹ️ About LLM Responses</p>
         <p>
           LLM responses are automatically generated and stored when the LLM processes a prompt chain. This view shows the

@@ -8,7 +8,7 @@ type CaptionItem = { id: string; text: string };
 type CardItem = {
   imageId: string;
   url: string;
-  caption: CaptionItem; // already non-empty
+  caption: CaptionItem;
 };
 
 export default function ImageCard({
@@ -29,7 +29,6 @@ export default function ImageCard({
     setStatus((s) => (s === null ? "idle" : s));
   }, []);
 
-  // If an image stays in "idle" for a while, try programmatic reload
   useEffect(() => {
     if (!item?.url) return;
     if (status !== "idle") return;
@@ -75,8 +74,6 @@ export default function ImageCard({
       if (result.success) {
         setUserVote(voteType);
         setVoteMessage(voteType === "upvote" ? "✓ Upvoted" : "✓ Downvoted");
-
-        // Immediately advance the stack so this card disappears
         onVoted();
       } else {
         setVoteMessage(result.error || "Failed to submit vote");
@@ -90,9 +87,9 @@ export default function ImageCard({
   };
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
+    <article className="group overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
       {/* Image */}
-      <div className="relative bg-slate-100">
+      <div className="relative bg-slate-100 dark:bg-slate-700">
         <div className="aspect-[4/5] w-full overflow-hidden">
           <img
             src={item.url}
@@ -105,20 +102,18 @@ export default function ImageCard({
           />
         </div>
 
-        {/* Loading / Error badges */}
         {status !== null && status !== "loaded" && (
-          <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">
+          <div className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-slate-800/90 px-3 py-1 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm backdrop-blur">
             {status === "idle" ? "Loading…" : "Image failed"}
           </div>
         )}
 
-        {/* Soft bottom fade for caption readability */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/50 to-transparent" />
       </div>
 
       {/* Caption */}
       <div className="p-5">
-        <p className="text-[15px] font-medium leading-snug text-slate-900">{item.caption.text}</p>
+        <p className="text-[15px] font-medium leading-snug text-slate-900 dark:text-slate-100">{item.caption.text}</p>
 
         {/* Voting */}
         <div className="mt-4 space-y-2">
@@ -128,8 +123,8 @@ export default function ImageCard({
               disabled={isVoting}
               className={`flex-1 rounded-lg py-2 font-semibold text-sm transition ${
                 userVote === "upvote"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               👍 Upvote
@@ -139,8 +134,8 @@ export default function ImageCard({
               disabled={isVoting}
               className={`flex-1 rounded-lg py-2 font-semibold text-sm transition ${
                 userVote === "downvote"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               👎 Downvote
@@ -150,7 +145,7 @@ export default function ImageCard({
           {voteMessage && (
             <p
               className={`text-xs font-medium ${
-                voteMessage.startsWith("✓") ? "text-green-600" : "text-red-600"
+                voteMessage.startsWith("✓") ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
               }`}
             >
               {voteMessage}
@@ -158,15 +153,15 @@ export default function ImageCard({
           )}
         </div>
 
-        <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+        <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span className="font-semibold uppercase tracking-wide">Community</span>
 
           {progress ? (
-            <span className="rounded-full bg-slate-100 px-2 py-1 font-mono">
+            <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-1 font-mono">
               {progress.current}/{progress.total}
             </span>
           ) : (
-            <span className="rounded-full bg-slate-100 px-2 py-1 font-mono">{item.imageId.slice(0, 8)}</span>
+            <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-1 font-mono">{item.imageId.slice(0, 8)}</span>
           )}
         </div>
       </div>
