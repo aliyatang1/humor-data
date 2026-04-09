@@ -371,7 +371,7 @@ export async function createHumorFlavor(
   description: string,
   slug: string
 ) {
-  const { user } = await requireSuperadmin();
+  await requireSuperadmin();
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -380,8 +380,7 @@ export async function createHumorFlavor(
       {
         description,
         slug,
-        created_by_user_id: user.id,
-        modified_by_user_id: user.id,
+        created_datetime_utc: new Date().toISOString(),
       },
     ])
     .select();
@@ -395,12 +394,12 @@ export async function updateHumorFlavor(
   description: string,
   slug: string
 ) {
-  const { user } = await requireSuperadmin();
+  await requireSuperadmin();
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
     .from("humor_flavors")
-    .update({ description, slug, modified_by_user_id: user.id })
+    .update({ description, slug })
     .eq("id", id)
     .select();
 
@@ -457,7 +456,7 @@ export async function createHumorFlavorStep(
   llmUserPrompt: string,
   description: string | null
 ) {
-  const { user } = await requireSuperadmin();
+  await requireSuperadmin();
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -474,8 +473,7 @@ export async function createHumorFlavorStep(
         llm_system_prompt: llmSystemPrompt,
         llm_user_prompt: llmUserPrompt,
         description,
-        created_by_user_id: user.id,
-        modified_by_user_id: user.id,
+        created_datetime_utc: new Date().toISOString(),
       },
     ])
     .select();
@@ -496,7 +494,7 @@ export async function updateHumorFlavorStep(
   llmUserPrompt: string,
   description: string | null
 ) {
-  const { user } = await requireSuperadmin();
+  await requireSuperadmin();
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -511,7 +509,6 @@ export async function updateHumorFlavorStep(
       llm_system_prompt: llmSystemPrompt,
       llm_user_prompt: llmUserPrompt,
       description,
-      modified_by_user_id: user.id,
     })
     .eq("id", id)
     .select();
@@ -612,7 +609,7 @@ export async function reorderHumorFlavorStep(
   stepId: number,
   newOrderBy: number
 ) {
-  const { user } = await requireSuperadmin();
+  await requireSuperadmin();
   const supabase = await createSupabaseServerClient();
 
   // Get the step to find its current order and flavor
@@ -665,7 +662,7 @@ export async function reorderHumorFlavorStep(
   // Update the target step
   const { error: updateError } = await supabase
     .from("humor_flavor_steps")
-    .update({ order_by: newOrderBy, modified_by_user_id: user.id })
+    .update({ order_by: newOrderBy })
     .eq("id", stepId);
 
   if (updateError) throw updateError;
@@ -674,7 +671,7 @@ export async function reorderHumorFlavorStep(
   for (const update of updates) {
     const { error } = await supabase
       .from("humor_flavor_steps")
-      .update({ order_by: update.order_by, modified_by_user_id: user.id })
+      .update({ order_by: update.order_by })
       .eq("id", update.id);
 
     if (error) throw error;
@@ -716,16 +713,14 @@ export async function testHumorFlavorOnImage(
   const API_BASE_URL = "https://api.almostcrackd.ai";
   
   try {
-    const response = await fetch(`${API_BASE_URL}/pipeline/generate-captions-with-flavor`, {
+    const response = await fetch(`${API_BASE_URL}/pipeline/generate-captions`, {
       method: "POST",
+      cache: "no-store",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        imageId,
-        humorFlavorId,
-      }),
+      body: JSON.stringify({ imageId, humorFlavorId }),
     });
 
     if (!response.ok) {
@@ -779,6 +774,35 @@ export async function getLLMResponses(chainId: number) {
     .from("llm_model_responses")
     .select("*")
     .eq("llm_prompt_chain_id", chainId)
+    .order("created_datetime_utc", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+// Get LLM Responses by Humor Flavor
+export async function getLLMResponsesByFlavorId(humorFlavorId: number) {
+  await requireSuperadmin();
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
+    .from("llm_model_responses")
+    .select("*")
+    .eq("humor_flavor_id", humorFlavorId)
+    .order("created_datetime_utc", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getCaptionsForFlavor(flavorId: number) {
+  await requireSuperadmin();
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
+    .from("captions")
+    .select("id, content, created_datetime_utc, image_id")
+    .eq("humor_flavor_id", flavorId)
     .order("created_datetime_utc", { ascending: false });
 
   if (error) throw error;

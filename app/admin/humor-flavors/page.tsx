@@ -13,6 +13,7 @@ import {
   reorderHumorFlavorStep,
   testHumorFlavorOnImage,
   getImages,
+  getLLMResponsesByFlavorId,
 } from "@/app/actions/admin";
 
 interface HumorFlavor {
@@ -39,7 +40,7 @@ interface HumorFlavorStep {
 
 interface Image {
   id: string;
-  url: string;
+  url: string | null;
   created_datetime_utc: string;
 }
 
@@ -82,6 +83,10 @@ export default function HumorFlavorsPage() {
   const [testResults, setTestResults] = useState<any>(null);
   const [testError, setTestError] = useState<string | null>(null);
 
+  // Memes state
+  const [flavorMemes, setFlavorMemes] = useState<any[]>([]);
+  const [loadingMemes, setLoadingMemes] = useState(false);
+
   useEffect(() => {
     loadFlavors();
     loadImages();
@@ -115,6 +120,18 @@ export default function HumorFlavorsPage() {
       setSteps(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load steps");
+    }
+  }
+
+  async function loadMemesForFlavor(flavorId: number) {
+    try {
+      setLoadingMemes(true);
+      const data = await getLLMResponsesByFlavorId(flavorId);
+      setFlavorMemes(data);
+    } catch (err) {
+      console.error("Failed to load memes:", err);
+    } finally {
+      setLoadingMemes(false);
     }
   }
 
@@ -444,6 +461,7 @@ export default function HumorFlavorsPage() {
                               e.stopPropagation();
                               setSelectedFlavorId(flavor.id);
                               loadStepsForFlavor(flavor.id);
+                              loadMemesForFlavor(flavor.id);
                             }}
                             className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium text-xs"
                           >
@@ -689,6 +707,47 @@ export default function HumorFlavorsPage() {
             </div>
           )}
 
+          {/* MEMES SECTION */}
+          <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-8">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Memes Generated with this Flavor
+            </h3>
+            {loadingMemes ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading memes...</div>
+            ) : flavorMemes.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                No memes generated with this flavor yet
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">ID</th>
+                      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Created</th>
+                      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Response</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {flavorMemes.map((meme) => (
+                      <tr key={meme.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td className="px-6 py-4 text-sm font-mono text-gray-900 dark:text-white">{meme.id}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                          {new Date(meme.created_datetime_utc).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-xs max-w-lg">
+                          <pre className="bg-gray-100 dark:bg-gray-900 p-2 rounded overflow-auto text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 max-h-40">
+                            {JSON.stringify(meme.llm_model_response, null, 2)}
+                          </pre>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
           {/* TEST SECTION */}
           {steps.length > 0 && (
             <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-8">
@@ -713,9 +772,9 @@ export default function HumorFlavorsPage() {
                     className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="">-- Choose an image --</option>
-                    {images.map((img) => (
+                    {images.filter((img) => img.url).map((img) => (
                       <option key={img.id} value={img.id}>
-                        {img.url.substring(img.url.lastIndexOf('/') + 1)} (ID: {img.id})
+                        {img.url!.substring(img.url!.lastIndexOf('/') + 1)} (ID: {img.id})
                       </option>
                     ))}
                   </select>
