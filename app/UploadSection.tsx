@@ -143,6 +143,7 @@ export default function UploadSection() {
             onChange={handleFileSelect}
             disabled={isUploadingOrGenerating}
             className="hidden"
+          />
         </label>
       </div>
 
