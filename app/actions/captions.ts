@@ -182,3 +182,49 @@ export async function uploadImageAndGenerateCaptions(
     };
   }
 }
+
+// Generate additional captions for an already-uploaded image
+export async function generateMoreCaptions(imageId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll: () => cookieStore.getAll(),
+          setAll: (cookiesToSet: any[]) => {
+            cookiesToSet.forEach(({ name, value, options }: any) => {
+              cookieStore.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "You must be logged in" };
+    }
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      return { success: false, error: "Failed to get authentication token" };
+    }
+
+    const captions = await generateCaptions(session.access_token, imageId);
+    return { success: true, captions };
+  } catch (error) {
+    console.error("Error generating more captions:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to generate captions",
+    };
+  }
+}

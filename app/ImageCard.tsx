@@ -3,6 +3,38 @@
 import React, { useEffect, useState } from "react";
 import { submitVote } from "./actions/votes";
 
+function ShareButton({ url, caption }: { url: string; caption: string }) {
+  const [label, setLabel] = useState("Share");
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "Humor Feed",
+      text: caption,
+      url,
+    };
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${caption}\n${url}`);
+        setLabel("Copied!");
+        setTimeout(() => setLabel("Share"), 2000);
+      }
+    } catch {
+      // user cancelled share — do nothing
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className="w-full rounded-lg py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition"
+    >
+      🔗 {label}
+    </button>
+  );
+}
+
 type CaptionItem = { id: string; text: string };
 
 type CardItem = {
@@ -88,6 +120,8 @@ export default function ImageCard({
 
   return (
     <article className="group overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
+      {/* Color accent strip */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400" />
       {/* Image */}
       <div className="relative bg-slate-100 dark:bg-slate-700">
         <div className="aspect-[4/5] w-full overflow-hidden">
@@ -121,24 +155,26 @@ export default function ImageCard({
             <button
               onClick={() => handleVote("upvote")}
               disabled={isVoting}
-              className={`flex-1 rounded-lg py-2 font-semibold text-sm transition ${
+              aria-label="Upvote"
+              className={`rounded-xl w-14 h-10 text-xl transition ${
                 userVote === "upvote"
                   ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                   : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              👍 Upvote
+              👍
             </button>
             <button
               onClick={() => handleVote("downvote")}
               disabled={isVoting}
-              className={`flex-1 rounded-lg py-2 font-semibold text-sm transition ${
+              aria-label="Downvote"
+              className={`rounded-xl w-14 h-10 text-xl transition ${
                 userVote === "downvote"
                   ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                   : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              👎 Downvote
+              👎
             </button>
           </div>
 
@@ -154,15 +190,28 @@ export default function ImageCard({
         </div>
 
         <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span className="font-semibold uppercase tracking-wide">Community</span>
+          <span className="font-semibold uppercase tracking-wide" title="Swipe through AI-generated captions for this meme">Caption Stack</span>
 
           {progress ? (
-            <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-1 font-mono">
-              {progress.current}/{progress.total}
-            </span>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="flex-1 h-1.5 rounded-full bg-slate-200 dark:bg-slate-600 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-300"
+                  style={{ width: `${(progress.current / progress.total) * 100}%` }}
+                />
+              </div>
+              <span className="shrink-0 rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 font-mono text-xs">
+                {progress.current}/{progress.total}
+              </span>
+            </div>
           ) : (
             <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-1 font-mono">{item.imageId.slice(0, 8)}</span>
           )}
+        </div>
+
+        {/* Share */}
+        <div className="mt-3">
+          <ShareButton url={item.url} caption={item.caption.text} />
         </div>
       </div>
     </article>

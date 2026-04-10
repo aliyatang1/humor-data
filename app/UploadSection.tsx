@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { uploadImageAndGenerateCaptions } from "./actions/captions";
+import { uploadImageAndGenerateCaptions, generateMoreCaptions } from "./actions/captions";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function UploadSection() {
@@ -9,6 +9,8 @@ export default function UploadSection() {
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "processing" | "success" | "error">("idle");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([]);
+  const [uploadedImageId, setUploadedImageId] = useState<string | null>(null);
+  const [isGeneratingMore, setIsGeneratingMore] = useState(false);
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [user, setUser] = useState<any | null>(null);
 
@@ -77,6 +79,7 @@ export default function UploadSection() {
       if (result.success) {
         setUploadStatus("success");
         setStatusMessage(`Successfully generated ${result.captions?.length || 0} captions!`);
+        if (result.imageId) setUploadedImageId(result.imageId);
         const captions = (result.captions || []).map((caption: any) => {
           if (typeof caption === "string") return caption;
           if (caption.content) return caption.content;
@@ -130,20 +133,16 @@ export default function UploadSection() {
       </p>
 
       <div className="mb-6">
-        <label className="block">
+        <label className="flex flex-col items-center justify-center w-full rounded-xl border-2 border-dashed border-indigo-300 dark:border-indigo-700 bg-indigo-50/50 dark:bg-indigo-950/20 p-6 cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition disabled:opacity-50">
+          <span className="text-indigo-500 dark:text-indigo-400 text-3xl mb-2">🖼️</span>
+          <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-300">Click to choose an image</span>
+          <span className="text-xs text-slate-400 mt-1">JPEG, PNG, WebP, GIF, HEIC</span>
           <input
             type="file"
             accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/heic"
             onChange={handleFileSelect}
             disabled={isUploadingOrGenerating}
-            className="block w-full text-sm text-slate-500 dark:text-slate-400
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-lg file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-400
-              hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50
-              disabled:opacity-50 disabled:cursor-not-allowed"
-          />
+            className="hidden"
         </label>
       </div>
 
@@ -170,12 +169,34 @@ export default function UploadSection() {
             {generatedCaptions.map((caption, idx) => (
               <div
                 key={idx}
-                className="p-4 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg"
+                className="p-4 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 rounded-lg"
               >
                 <p className="text-slate-700 dark:text-slate-300">{caption}</p>
               </div>
             ))}
           </div>
+          {uploadedImageId && (
+            <button
+              onClick={async () => {
+                setIsGeneratingMore(true);
+                const result = await generateMoreCaptions(uploadedImageId);
+                if (result.success) {
+                  const more = (result.captions || []).map((c: any) => {
+                    if (typeof c === "string") return c;
+                    if (c.content) return c.content;
+                    if (c.text) return c.text;
+                    return JSON.stringify(c);
+                  });
+                  setGeneratedCaptions((prev) => [...prev, ...more]);
+                }
+                setIsGeneratingMore(false);
+              }}
+              disabled={isGeneratingMore}
+              className="mt-5 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 py-2.5 text-sm font-bold text-white shadow hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGeneratingMore ? "Generating…" : "✨ Generate More Captions"}
+            </button>
+          )}
         </div>
       )}
     </section>
